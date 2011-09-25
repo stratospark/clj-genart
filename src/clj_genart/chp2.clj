@@ -10,24 +10,14 @@
   "Evaluate to draw next frame."
   (framerate 24)
   (smooth)
-  ;; (background-float 180)
-  (let [cx (/ (width) 2)
-        cy (/ (height) 2)]
-    (stroke-float 40 20 30)
-    (stroke-weight 5)
-    (ellipse cx cy @diam @diam)
-    (fill-float 255 50)
-    (stroke-weight 1)
-    ;; (draw-ellipses cx cy @diam 10 10)
-    (swap! diam + 10)
-    (if (> @diam 400)
-      (reset! diam 10))))
-
-(defn draw-ellipses [cx cy cur-diam end-diam step]
-  (if (> cur-diam end-diam)
-    (do
-      (ellipse cx cy cur-diam cur-diam)
-      (recur cx cy (- cur-diam step) end-diam step))))
+  (background-float 180)
+  (stroke-weight 4)
+  (stroke-cap 0)
+  (doseq [h (range 10 (- *height* 15) 10)]
+    (stroke-float 0 (- 255 h))
+    (line 10 h (- *width* 10) h)
+    (stroke-float 255 h)
+    (line 10 (+ h 4) (- *width* 10) (+ h 4))))
 
 (defn setup []
   "Runs once."
