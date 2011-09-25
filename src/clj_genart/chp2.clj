@@ -13,7 +13,9 @@
   (background-float 180)
   (stroke-weight 4)
   (stroke-cap 0)
-  (doseq [h (range 10 (- *height* 15) 10)]
+
+  ;; (if (= "a" (.keyPressed app)) (reset! diam 30))
+  (doseq [h (range 10 (- *height* 15) @diam)]
     (stroke-float 0 (- 255 h))
     (line 10 h (- *width* 10) h)
     (stroke-float 255 h)
@@ -23,9 +25,13 @@
   "Runs once."
   (smooth))
 
+(defn key-typed [e]
+  (if (= \a (.getKeyChar e))
+    (reset! diam (rand-int 20))))
 
 (defapplet app :title "Chapter 2"
-  :setup setup :draw draw :size [*width* *height*])
+  :setup setup :draw draw :size [*width* *height*]
+  :key-typed key-typed)
 
 (run app)
 
