@@ -14,12 +14,18 @@
   (let [cx (/ (width) 2)
         cy (/ (height) 2)]
     (stroke-float 0)
-    (stroke-weight 5)
+    (stroke-weight 1)
     (fill-float 255 50)
-    (ellipse cx cy @diam @diam)
+    (draw-ellipses cx cy @diam 10 10)
     (swap! diam + 10)
     (if (> @diam 400)
       (reset! diam 10))))
+
+(defn draw-ellipses [cx cy cur-diam end-diam step]
+  (if (> cur-diam end-diam)
+    (do
+      (ellipse cx cy cur-diam cur-diam)
+      (recur cx cy (- cur-diam step) end-diam step))))
 
 (defn setup []
   "Runs once."
