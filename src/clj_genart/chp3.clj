@@ -20,11 +20,11 @@
 
 (defn draw-random-lines [border-x border-y width steps]
   (loop [x border-x
-         y border-y
+         y (/ *height* 2)
          n steps]
     (if (> n 0)
       (let [next-x (+ x (/ width steps))
-            next-y (+ border-y (rand-int (- *height* (* 2 border-y))))]
+            next-y (+ y (- (rand-int 20) 10))]
         (line x y next-x next-y)
         (recur next-x
                next-y
