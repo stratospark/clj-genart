@@ -10,13 +10,26 @@
   (framerate 12)
   (smooth)
   (background-float 255)
+  ;; horizontal line
   (stroke 0 30)
   (stroke-weight 5)
   (line 20 50 480 50)
+  ;; random lines
   (stroke 20 50 70)
-  (let [rand-x (rand-int *width*)
-        rand-y (rand-int *height*)]
-    (line 20 50 rand-x rand-y)))
+  (draw-random-lines 20 10 460 50))
+
+(defn draw-random-lines [border-x border-y width steps]
+  (loop [x border-x
+         y border-y
+         n steps]
+    (if (> n 0)
+      (let [next-x (+ x (/ width steps))
+            next-y (+ border-y (rand-int (- *height* (* 2 border-y))))]
+        (line x y next-x next-y)
+        (recur next-x
+               next-y
+               (- n 1))))))
+
 
 (defn setup []
   "Runs once."
