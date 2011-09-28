@@ -25,15 +25,19 @@
   (loop [x border-x
          y (/ *height* 2)
          n steps
-         y-noise (map-mouse-pos-to-noise)]
+         ;; y-noise (map-mouse-pos-to-noise)
+         rad 0]
     (if (> n 0)
       (let [next-x (+ x (/ width steps))
-            next-y (+ 10 (* 80 (noise y-noise)))]
+            ;; next-y (+ 10 (* 80 (noise y-noise)))
+            next-y (+ 50 (* 40 (pow (sin (radians rad)) 3)))
+            ]
         (line x y next-x next-y)
         (recur next-x
                next-y
                (- n 1)
-               (+ y-noise (map-mouse-pos-to-noise-inc)))))))
+               ;; (+ y-noise (map-mouse-pos-to-noise-inc))
+               (+ rad 1))))))
 
 (defn map-mouse-pos-to-noise []
   (let [[x y] @mouse-pos] (map-to x 0 *width* 0 10)))
