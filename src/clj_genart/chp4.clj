@@ -28,7 +28,8 @@
                  (+ radius-noise 0.05)))))))
 
 (defn custom-noise [value]
-  (pow (sin value) 3))
+  (let [count (mod value 12)]
+    (pow (sin value) count)))
 
 (defn draw-shape [radius cent-x cent-y]
   (begin-shape)
@@ -46,7 +47,7 @@
           (curve-vertex x y)
           (recur radius
                  (+ ang 1)
-                 (+ radius-noise 0.1))))))
+                 (+ radius-noise 0.6))))))
   (end-shape))
 
 (defn draw []
