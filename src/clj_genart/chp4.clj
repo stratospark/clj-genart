@@ -27,12 +27,34 @@
                  y
                  (+ radius-noise 0.05)))))))
 
+(defn custom-noise [value]
+  (pow (sin value) 3))
+
+(defn draw-shape [radius cent-x cent-y]
+  (begin-shape)
+  (fill 20 50 70 50)
+  (loop [radius radius
+         ang 0
+         radius-noise (rand-int 10)]
+    (let [rad-variance (* 30 (custom-noise radius-noise))
+          this-radius (+ radius rad-variance)
+          rad (radians ang)
+          x (+ cent-x (* this-radius (cos rad)))
+          y (+ cent-y (* this-radius (sin rad)))]
+      (if (<= ang 360)
+        (do
+          (curve-vertex x y)
+          (recur radius
+                 (+ ang 1)
+                 (+ radius-noise 0.1))))))
+  (end-shape))
+
 (defn draw []
   "Evaluate to draw next frame."
   (do
     (framerate 1)
-    ;; (smooth)
-    (background-float 0)
+    (smooth)
+    (background-float 255)
     (stroke-weight 2.0)
 
     (let [radius 100
@@ -44,8 +66,7 @@
       (ellipse cent-x cent-y (* radius 2) (* radius 2))
 
       ;; Iterative spiral
-      (doseq [x (range 100)]
-        (draw-spiral 10 cent-x cent-y)))))
+      (draw-shape radius cent-x cent-y))))
 
 (defn setup []
   "Runs once."
