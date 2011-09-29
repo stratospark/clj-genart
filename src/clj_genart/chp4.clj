@@ -6,33 +6,34 @@
 (def *height* 300)
 
 (defn draw-spiral [radius cent-x cent-y]
+  (stroke (rand-int 120) (rand-int 250) (rand-int 200) 80)
   (loop [radius radius
-         ang 0
+         ang (rand-int 360)
          last-x -999
          last-y -999
          radius-noise (rand-int 10)]
-    (let [this-radius (+ radius (* 20 (noise radius-noise)) -1)
+    (let [this-radius (+ radius (* 300 (noise radius-noise)) -100)
           rad (radians ang)
           x (+ cent-x (* this-radius (cos rad)))
           y (+ cent-y (* this-radius (sin rad)))
           ]
-      (if (<= ang 1440)
+      (if (<= ang (+ 1440 (rand-int 1440)))
         (do
           (if (and (> last-x -999) (> last-y -999))
             (line last-x last-y x y))
           (recur (+ radius 0.5)
-                 (+ ang 5)
+                 (+ ang (+ 5 (rand-int 3)))
                  x
                  y
-                 (+ radius-noise 0.1)))))))
+                 (+ radius-noise 0.05)))))))
 
 (defn draw []
   "Evaluate to draw next frame."
   (do
-    (framerate 10)
-    (smooth)
-    (background-float 255)
-    (stroke-weight 1)
+    (framerate 1)
+    ;; (smooth)
+    (background-float 0)
+    (stroke-weight 2.0)
 
     (let [radius 100
           cent-x 250
@@ -43,8 +44,8 @@
       (ellipse cent-x cent-y (* radius 2) (* radius 2))
 
       ;; Iterative spiral
-      (stroke 20 50 70)
-      (draw-spiral 10 cent-x cent-y))))
+      (doseq [x (range 100)]
+        (draw-spiral 10 cent-x cent-y)))))
 
 (defn setup []
   "Runs once."
