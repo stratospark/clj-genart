@@ -9,26 +9,30 @@
   (loop [radius radius
          ang 0
          last-x -999
-         last-y -999]
-    (let [rad (radians ang)
-          x (+ cent-x (* radius (cos rad)))
-          y (+ cent-y (* radius (sin rad)))]
+         last-y -999
+         radius-noise (rand-int 10)]
+    (let [this-radius (+ radius (* 20 (noise radius-noise)) -1)
+          rad (radians ang)
+          x (+ cent-x (* this-radius (cos rad)))
+          y (+ cent-y (* this-radius (sin rad)))
+          ]
       (if (<= ang 1440)
         (do
           (if (and (> last-x -999) (> last-y -999))
             (line last-x last-y x y))
           (recur (+ radius 0.5)
-               (+ ang 5)
-               x
-               y))))))
+                 (+ ang 5)
+                 x
+                 y
+                 (+ radius-noise 0.1)))))))
 
 (defn draw []
   "Evaluate to draw next frame."
   (do
-    (framerate 24)
+    (framerate 10)
     (smooth)
     (background-float 255)
-    (stroke-weight 5)
+    (stroke-weight 1)
 
     (let [radius 100
           cent-x 250
