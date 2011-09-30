@@ -5,69 +5,86 @@
 (def *width* 500)
 (def *height* 300)
 
-(defn draw-spiral [radius cent-x cent-y]
-  (stroke (rand-int 120) (rand-int 250) (rand-int 200) 80)
-  (loop [radius radius
-         ang (rand-int 360)
-         last-x -999
-         last-y -999
-         radius-noise (rand-int 10)]
-    (let [this-radius (+ radius (* 300 (noise radius-noise)) -100)
-          rad (radians ang)
-          x (+ cent-x (* this-radius (cos rad)))
-          y (+ cent-y (* this-radius (sin rad)))
-          ]
-      (if (<= ang (+ 1440 (rand-int 1440)))
-        (do
-          (if (and (> last-x -999) (> last-y -999))
-            (line last-x last-y x y))
-          (recur (+ radius 0.5)
-                 (+ ang (+ 5 (rand-int 3)))
-                 x
-                 y
-                 (+ radius-noise 0.05)))))))
-
 (defn custom-noise [value]
   (let [count (mod value 12)]
     (pow (sin value) count)))
 
-(defn draw-shape [radius cent-x cent-y]
-  (begin-shape)
-  (fill 20 50 70 50)
-  (loop [radius radius
-         ang 0
-         radius-noise (rand-int 10)]
-    (let [rad-variance (* 30 (custom-noise radius-noise))
-          this-radius (+ radius rad-variance)
-          rad (radians ang)
-          x (+ cent-x (* this-radius (cos rad)))
-          y (+ cent-y (* this-radius (sin rad)))]
-      (if (<= ang 360)
-        (do
-          (curve-vertex x y)
-          (recur radius
-                 (+ ang 1)
-                 (+ radius-noise 0.6))))))
-  (end-shape))
+(defn draw-frame
+  ([]
+     (fn []
+       (background-int 255)
+       (draw-frame (rand-int 10)
+                   (rand-int 10)
+                   (rand-int 10)
+                   (rand-int 10)
+                   (/ Math/PI -2)
+                   0
+                   254
+                   -1)))
+  ([ang-noise
+    radius-noise
+    x-noise
+    y-noise
+    angle
+    radius
+    stroke-color
+    stroke-change]
+     (let [radius-noise (+ radius-noise 0.005)
+           radius (+ (* 550 (noise radius-noise)) 1)
+
+           ang-noise (+ ang-noise 0.005)
+           angle (let
+                     [temp-angle (+ angle (* 6 (noise ang-noise)) -3)]
+                   (cond (> temp-angle 360) (- temp-angle 360)
+                         (< temp-angle 0) (+ temp-angle 360)
+                         :else temp-angle))
+
+           x-noise (+ x-noise 0.01)
+           y-noise (+ y-noise 0.01)
+
+           center-x (+ (/ *width* 2) (* 100 (noise x-noise)) -50)
+           center-y (+ (/ *height* 2) (* 100 (noise y-noise)) -50)
+
+           rad (radians angle)
+           x1 (+ center-x (* radius (cos rad)))
+           y1 (+ center-y (* radius (sin rad)))
+
+           oprad (+ rad Math/PI)
+           x2 (+ center-x (* radius (cos oprad)))
+           y2 (+ center-y (* radius (sin oprad)))
+
+           stroke-color (+ stroke-color stroke-change)
+           stroke-change (cond (> stroke-color 254) -1
+                               (< stroke-color 0) 1
+                               :else stroke-change)
+
+           ]
+       (stroke stroke-color 60)
+       (stroke-weight 1)
+       (line x1 y1 x2 y2)
+       (fn []
+         (draw-frame ang-noise
+                     radius-noise
+                     x-noise
+                     y-noise
+                     angle
+                     radius
+                     stroke-color
+                     stroke-change)))))
+
+
+(def next-frame (atom nil))
 
 (defn draw []
   "Evaluate to draw next frame."
-  (do
-    (framerate 1)
-    (smooth)
-    (background-float 255)
-    (stroke-weight 2.0)
+  (frame-rate 60)
+  ;; (background-float 255)
 
-    (let [radius 100
-          cent-x 250
-          cent-y 150]
-      ;; Built in ellipse
-      (stroke 0 30)
-      (no-fill)
-      (ellipse cent-x cent-y (* radius 2) (* radius 2))
-
-      ;; Iterative spiral
-      (draw-shape radius cent-x cent-y))))
+  (if (nil? @next-frame) (reset! next-frame (draw-frame)))
+  (reset! next-frame (@next-frame))
+  ;; TODO: Find a better way to save state between frames that allows
+  ;; for code updates
+)
 
 (defn setup []
   "Runs once."
