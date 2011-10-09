@@ -18,12 +18,16 @@
 )
 
 (defn draw-point [x y noise-factor]
-  (push-matrix)
-  (translate x y)
-  (rotate (* noise-factor (radians 360)))
-  (stroke-float (rand-int 100) (rand-int 255) 140 150)
-  (line 0 0 30 0)
-  (pop-matrix))
+  (let [edge-size (* noise-factor 25)
+        grey (+ 150 (* noise-factor 120))
+        alph (+ 150 (* noise-factor 120))]
+    (push-matrix)
+    (translate x y)
+    (rotate (* noise-factor (radians 540)))
+    (no-stroke)
+    (fill-int grey alph)
+    (ellipse 0 0 edge-size (/ edge-size 2))
+    (pop-matrix)))
 
 (defn draw-grid-row [y x-noise y-noise]
   (loop [x 0
