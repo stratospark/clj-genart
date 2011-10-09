@@ -2,8 +2,8 @@
   (:use [rosado.processing]
         [rosado.processing.applet]))
 
-(def *width* 300)
-(def *height* 300)
+(def *width* 600)
+(def *height* 600)
 
 (defn custom-noise [value]
   (let [count (mod value 12)]
@@ -12,13 +12,18 @@
 (defn draw []
   "Evaluate to draw next frame."
   (frame-rate 1)
+  (smooth)
   (background-float 0)
   (draw-grid)
 )
 
 (defn draw-point [x y noise-factor]
-  (let [len (* 10 noise-factor)]
-    (rect x y len len)))
+  (push-matrix)
+  (translate x y)
+  (rotate (* noise-factor (radians 360)))
+  (stroke-float (rand-int 100) (rand-int 255) 140 150)
+  (line 0 0 30 0)
+  (pop-matrix))
 
 (defn draw-grid-row [y x-noise y-noise]
   (loop [x 0
