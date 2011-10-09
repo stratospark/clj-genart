@@ -12,21 +12,26 @@
 (defn draw []
   "Evaluate to draw next frame."
   (frame-rate 1)
-  (background-float 255)
+  (background-float 0)
   (draw-grid)
 )
+
+(defn draw-point [x y noise-factor]
+  (let [len (* 10 noise-factor)]
+    (rect x y len len)))
 
 (defn draw-grid-row [y x-noise y-noise]
   (loop [x 0
          x-noise x-noise
          y-noise y-noise
          ]
-    (stroke-int 0 (* 255 (noise x-noise y-noise)))
-    (line x y (inc x) (inc y))
+    ;; (stroke-float 10 28 180 (* 255 (noise x-noise y-noise)))
+    ;; (line x y (inc x) (inc y))
+    (draw-point x y (noise x-noise y-noise))
     (if (< x *width*)
-      (recur (inc x)
-             (+ x-noise 0.01)
-             (+ y-noise 0)))))
+      (recur (+ x 5)
+             (+ x-noise 0.1)
+             y-noise))))
 
 (defn draw-grid []
   (loop [y *height*
@@ -34,9 +39,9 @@
          y-noise (rand-int 10)]
     (draw-grid-row y x-noise y-noise)
     (if (> y 0)
-      (recur (dec y)
+      (recur (- y 5)
              x-noise
-             (+ y-noise 0.03)))))
+             (+ y-noise 0.1)))))
 
 
 
